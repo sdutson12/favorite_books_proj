@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{{book.title}}</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<body>
+    <div class="container mt-5">
+            {% if current_user == book.uploaded_by %}
+                <h3>{{book.title}}</h3>
+                <a href="/edit/{{book.id}}">(Edit)</a> <a href="/delete/{{book.id}}">(Delete)</a>
+            {% else %}
+                <h3>Title: {{book.title}}</h3>
+            {% endif %}
+            <h6 style="word-break: break-word">Description: {{book.desc}}</h6>
+            <h6>Users who liked this book:</h6>
+            <ul>
+                {% for user in book.users_who_like.all %}
+                    <li>{{user.first_name}} {{user.last_name}}</li>
+                {% endfor %}
+            </ul>
+
+        {% if current_user in book.users_who_like.all %}
+        <a href="/remove_from_favs/{{book.id}}" class="mr-3">Remove from Favorites</a>
+        {% endif %}
+        {% if current_user not in book.users_who_like.all %}
+        <a href="/add_to_favs/{{book.id}}" class="mr-3">Add to Favorites</a>
+        {% endif %}
+        <a href="/dashboard">Back to Dashboard</a>
+    </div>
+</body>
+</html>

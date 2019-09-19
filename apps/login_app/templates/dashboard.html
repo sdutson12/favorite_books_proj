@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Welcome, {{request.session.first_name}} {{request.session.last_name}}!</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/logout">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="split col-6">
+                <h4>Add a Favorite Book</h4>
+                {% if messages %}
+                <ul class="messages text-center text-danger">
+                    {% for message in messages %}
+                    <li {% if message.tags %} class="{{ message.tags }} list-group-item" {% endif %}>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                <form action="/create_book" method="POST">
+                    {% csrf_token %}
+                    <label for="title">Title</label>
+                    <input type="text" name="title" id="title">
+                    <label for="desc">Description</label>
+                    <input type="text" name="desc" id="desc">
+                    <input type="submit" value="Add">
+                </form>
+            </div>
+            <div class="split col-6">
+                <h4>Popular Books</h4>
+                {% for book in books %}
+                    {% if book not in current_user.liked_books.all %}
+                        <ul>
+                            <li><a href="/show/{{book.id}}">{{book.title}}</a> (added by {{book.uploaded_by.first_name}} {{book.uploaded_by.last_name}}) +{{book.users_who_like.all.count}} <a href="/add_to_favs/{{book.id}}">+Favorites</a></li>
+                        </ul>
+                    {% endif %}   
+                {% endfor %}
+                <h4>Your Favorites</h4>
+                {% for book in books %}
+                    {% if book in current_user.liked_books.all %}
+                    <ul>
+                        <li><a href="/show/{{book.id}}">{{book.title}}</a> (added by {{book.uploaded_by.first_name}} {{book.uploaded_by.last_name}}) +{{book.users_who_like.all.count}}</li>
+                    </ul>
+                    {% endif %}   
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
